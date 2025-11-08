@@ -60,11 +60,11 @@ obsctl = ObsController()
 obsctl.get_version()
 ```
 
-Would show this in the terminal:
+Might show this in the terminal:
 
 ```text
-OBS version: xx.x.x
-obs-websocket version: x.x.x
+OBS version: 31.1.2
+obs-websocket version: 5.6.2
 ```
 
 ---
