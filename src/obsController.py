@@ -26,7 +26,28 @@ class ObsController:
             print("Reason:", e)
             raise SystemExit()
         
+    def _find_source_in_groups(self, source_name: str) -> tuple[str | None, int | None]:
+        """
+        Find a source that lives inside a group in the current scene.
 
+        Returns (group_name, scene_item_id) or (None, None) if not found.
+        """
+        scene_name = self.get_current_scene()
+        items = self.client.get_scene_item_list(scene_name)
+
+        for item in items.scene_items: # type: ignore
+            group_name = item["sourceName"]
+
+            try:
+                group_items = self.client.get_group_scene_item_list(group_name)
+            except Exception:
+                continue
+
+            for child in group_items.scene_items: # type: ignore
+                if child["sourceName"] == source_name:
+                    return group_name, child["sceneItemId"]
+
+        return None, None
 
     # Info
     def get_version(self) -> str:
@@ -101,29 +122,6 @@ class ObsController:
                 names.append(child["sourceName"])
 
         return names
-
-    def _find_source_in_groups(self, source_name: str) -> tuple[str | None, int | None]:
-        """
-        Find a source that lives inside a group in the current scene.
-
-        Returns (group_name, scene_item_id) or (None, None) if not found.
-        """
-        scene_name = self.get_current_scene()
-        items = self.client.get_scene_item_list(scene_name)
-
-        for item in items.scene_items: # type: ignore
-            group_name = item["sourceName"]
-
-            try:
-                group_items = self.client.get_group_scene_item_list(group_name)
-            except Exception:
-                continue
-
-            for child in group_items.scene_items: # type: ignore
-                if child["sourceName"] == source_name:
-                    return group_name, child["sceneItemId"]
-
-        return None, None
 
     def toggle_source(self, source_name: str) -> bool:
         """
